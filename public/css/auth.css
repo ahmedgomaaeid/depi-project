@@ -1,0 +1,30 @@
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f9fa;
+  }
+  .login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  .form-label {
+    font-weight: bold;
+  }
+  .login-container .btn {
+    width: 100%;
+  }
+  .login-container a {
+    text-decoration: none;
+  }
+  .login-container .forgot-password,
+  .login-container .signup-link {
+    text-align: center;
+    display: block;
+    margin-top: 10px;
+  }
