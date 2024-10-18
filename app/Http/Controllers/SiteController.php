@@ -59,24 +59,38 @@ class SiteController extends Controller
 
     public function lesson($id)
     {
-        $lesson= Lesson::find($id);
+        $lesson = Lesson::find($id);
         $lessons = Lesson::where('course_id', $lesson->course_id)->get();
-        $seens = Seen::where('user_id', auth()->id())->where('course_id', $lesson->course_id)->pluck('lesson_id')->toArray();
-        $seens[] = $lesson->where('course_id', $lesson->course_id)->whereNotIn('id', $seens)->first()->id??null;
-        if(!in_array($id, $seens))
-        {
+        $seens = Seen::where('user_id', auth()->id())
+                    ->where('course_id', $lesson->course_id)
+                    ->pluck('lesson_id')
+                    ->toArray();
+
+        // Corrected line
+        $seens[] = Lesson::where('course_id', $lesson->course_id)
+                        ->whereNotIn('id', $seens)
+                        ->first()
+                        ->id ?? null;
+
+        if (!in_array($id, $seens)) {
             return redirect()->route('course.show', $lesson->course_id);
         }
-        //find or create a new seen
+
         $seen = Seen::firstOrNew([
             'user_id' => auth()->id(),
             'course_id' => $lesson->course_id,
             'lesson_id' => $id
         ]);
         $seen->save();
+
         $seens[] = $id;
-        //git first id after last seen id
-        $seens[] = $lesson->where('course_id', $lesson->course_id)->whereNotIn('id', $seens)->first()->id??null;
+
+        // Corrected line
+        $seens[] = Lesson::where('course_id', $lesson->course_id)
+                        ->whereNotIn('id', $seens)
+                        ->first()
+                        ->id ?? null;
+
         return view('lesson', compact('id', 'lesson', 'lessons', 'seens'));
     }
 }
