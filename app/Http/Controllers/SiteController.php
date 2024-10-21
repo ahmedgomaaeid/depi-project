@@ -59,7 +59,7 @@ class SiteController extends Controller
 
     public function lesson($id)
     {
-        $lesson = Lesson::find($id);
+        $lesson = Lesson::findOrFail($id);
         $lessons = Lesson::where('course_id', $lesson->course_id)->get();
         $seens = Seen::where('user_id', auth()->id())
                     ->where('course_id', $lesson->course_id)
@@ -67,12 +67,13 @@ class SiteController extends Controller
                     ->toArray();
 
         // Corrected line
-        $seens[] = Lesson::where('course_id', $lesson->course_id)
+        $next_lesson = Lesson::where('course_id', $lesson->course_id)
                         ->whereNotIn('id', $seens)
                         ->first()
                         ->id ?? null;
 
-        if (!in_array($id, $seens)) {
+
+        if (!in_array($id, $seens) && $id != $next_lesson) {
             return redirect()->route('course.show', $lesson->course_id);
         }
 
@@ -86,11 +87,14 @@ class SiteController extends Controller
         $seens[] = $id;
 
         // Corrected line
-        $seens[] = Lesson::where('course_id', $lesson->course_id)
+        if($id == end($seens))
+        {
+            $next_lesson = Lesson::where('course_id', $lesson->course_id)
                         ->whereNotIn('id', $seens)
                         ->first()
                         ->id ?? null;
+        }
 
-        return view('lesson', compact('id', 'lesson', 'lessons', 'seens'));
+        return view('lesson', compact('id', 'lesson', 'lessons', 'seens', 'next_lesson'));
     }
 }
