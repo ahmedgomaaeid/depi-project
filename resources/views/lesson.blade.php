@@ -34,7 +34,9 @@
             </p>
         </video>
       <p>{{ $lesson->description }}</p>
-      @if($next_lesson)
+      @if($quiz && $quiz->count() > 0 && $quiz->scores->count() == 0)
+        <a href="{{ route('quiz.show', $quiz->id) }}" class="btn btn-primary">Take Quiz</a>
+      @elseif($next_lesson && $lesson->id == end($seens))
         <a href="{{ route('lesson.show', $next_lesson) }}" class="btn btn-primary">Open Next Lesson</a>
       @endif
     </div>

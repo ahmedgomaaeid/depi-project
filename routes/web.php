@@ -22,6 +22,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/course/{id}', [App\Http\Controllers\SiteController::class, 'course'])->name('course.show');
     Route::get('/lesson/{id}', [App\Http\Controllers\SiteController::class, 'lesson'])->name('lesson.show');
     Route::get('/my-courses', [App\Http\Controllers\SiteController::class, 'myCourses'])->name('my.courses');
+    Route::get('/quiz/{id}', [App\Http\Controllers\SiteController::class, 'quiz'])->name('quiz.show');
+    Route::post('/quiz/{id}', [App\Http\Controllers\SiteController::class, 'quizSubmit'])->name('quiz.submit');
+    Route::get('/score/{id}', [App\Http\Controllers\SiteController::class, 'score'])->name('score.show');
 });
 
 Route::group(['middleware' => 'guest'], function () {

@@ -6,6 +6,9 @@ use App\Models\Category;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
+use App\Models\Question;
+use App\Models\Quiz;
+use App\Models\Score;
 use App\Models\Seen;
 use Illuminate\Http\Request;
 
@@ -61,6 +64,7 @@ class SiteController extends Controller
     {
         $lesson = Lesson::findOrFail($id);
         $lessons = Lesson::where('course_id', $lesson->course_id)->get();
+        $quiz = Quiz::where('course_id', $lesson->course_id)->where('after_lesson', $id)->first();
         $seens = Seen::where('user_id', auth()->id())
                     ->where('course_id', $lesson->course_id)
                     ->pluck('lesson_id')
@@ -71,7 +75,29 @@ class SiteController extends Controller
                         ->whereNotIn('id', $seens)
                         ->first()
                         ->id ?? null;
+        $prev_lesson = Lesson::where('course_id', $lesson->course_id)
+                        ->where('id', '<', $id)
+                        ->orderBy('id', 'desc')
+                        ->first()
+                        ->id ?? null;
+        //check if prev_lesson is not has quiz or it's quiz is already taken
+        if ($prev_lesson) {
+            $prev_quiz = Quiz::where('course_id', $lesson->course_id)
+                        ->where('after_lesson', $prev_lesson)
+                        ->first();
 
+            if($prev_quiz){
+                $prev_quiz_score = $prev_quiz->scores()
+                            ->where('user_id', auth()->id())
+                            ->first();
+
+                if ($prev_quiz_score) {
+                    $prev_lesson = null;
+                }else{
+                    return redirect()->route('course.show', $lesson->course_id);
+                }
+            }
+        }
 
         if (!in_array($id, $seens) && $id != $next_lesson) {
             return redirect()->route('course.show', $lesson->course_id);
@@ -85,6 +111,8 @@ class SiteController extends Controller
         $seen->save();
 
         $seens[] = $id;
+        //removed duplicate seens array with the same order exist
+        $seens = array_unique($seens);
 
         // Corrected line
         if($id == end($seens))
@@ -95,6 +123,49 @@ class SiteController extends Controller
                         ->id ?? null;
         }
 
-        return view('lesson', compact('id', 'lesson', 'lessons', 'seens', 'next_lesson'));
+        return view('lesson', compact('id', 'lesson', 'lessons', 'seens', 'next_lesson', 'quiz'));
+    }
+
+    public function quiz($id)
+    {
+        $quiz = Quiz::findOrFail($id);
+        $questions = $quiz->questions;
+        return view('quiz', compact('quiz', 'questions'));
+    }
+
+    public function quizSubmit(Request $request, $id)
+    {
+        // Retrieve all submitted answers
+        // Retrieve all submitted answers
+        $quiz = Quiz::findOrFail($id);
+        $submittedAnswers = $request->except('_token');
+
+        // Fetch all questions and their correct answers for the given quiz
+        $questions = Question::where('quiz_id', $id)->get();
+
+        $correctAnswers = 0;
+        $totalQuestions = $questions->count();
+
+        // Compare submitted answers with correct answers
+        foreach ($questions as $question) {
+            if (isset($submittedAnswers[$question->id]) && $submittedAnswers[$question->id] == $question->answer) {
+                $correctAnswers++;
+            }
+        }
+
+        // Calculate the score as a percentage
+        $score = ($correctAnswers / $totalQuestions) * 100;
+        // Record the score (optional, if you want to save it to the database)
+        if($score < 50){
+            return view('score', compact('score', 'quiz'));
+        }
+        Score::create([
+            'user_id' => auth()->id(),
+            'quiz_id' => $id,
+            'score' => $score,
+        ]);
+
+        // Return the score
+        return view('score', compact('score', 'quiz'));
     }
 }
