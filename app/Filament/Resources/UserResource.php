@@ -43,6 +43,7 @@ class UserResource extends Resource
                         '0' => 'User',
                         '1' => 'Admin',
                     ])
+                    // select 0 by default
                     ->default('0')
                     ->required(),
                 TextInput::make('password')
