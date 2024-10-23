@@ -58,8 +58,8 @@
                             to help!</p>
                         <ul class="list-unstyled">
                             <li><strong>Email:</strong> support@elearning.com</li>
-                            <li><strong>Phone:</strong> +1 234 567 890</li>
-                            <li><strong>Address:</strong> 1234 Learning St., New York, NY 10001</li>
+                            <li><strong>Phone:</strong> 01023523234</li>
+                            <li><strong>Address:</strong> 1234 Learning St., Tanta, EGYpt</li>
                         </ul>
                     </div>
                     <div class="col-md-6">
