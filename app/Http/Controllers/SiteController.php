@@ -12,6 +12,8 @@ use App\Models\Score;
 use App\Models\Seen;
 use Illuminate\Http\Request;
 
+
+
 class SiteController extends Controller
 {
     public function index()
@@ -64,11 +66,13 @@ class SiteController extends Controller
     {
         $lesson = Lesson::findOrFail($id);
         $lessons = Lesson::where('course_id', $lesson->course_id)->get();
+        $last_lesson = $lessons->last()->id;
         $quiz = Quiz::where('course_id', $lesson->course_id)->where('after_lesson', $id)->first();
         $seens = Seen::where('user_id', auth()->id())
                     ->where('course_id', $lesson->course_id)
                     ->pluck('lesson_id')
                     ->toArray();
+        $courseName = $lesson->course->name;
 
         // Corrected line
         $next_lesson = Lesson::where('course_id', $lesson->course_id)
@@ -122,13 +126,24 @@ class SiteController extends Controller
                         ->first()
                         ->id ?? null;
         }
+        $lastSeenDate = Seen::where('user_id', auth()->id())
+                        ->where('course_id', $lesson->course_id)
+                        ->orderBy('id', 'desc')
+                        ->first()
+                        ->created_at ?? null;
 
-        return view('lesson', compact('id', 'lesson', 'lessons', 'seens', 'next_lesson', 'quiz'));
+        return view('lesson', compact('id', 'lesson', 'lessons', 'seens', 'next_lesson', 'quiz', 'last_lesson', 'courseName', 'lastSeenDate'));
     }
 
     public function quiz($id)
     {
         $quiz = Quiz::findOrFail($id);
+        $lessonSeen = Seen::where('lesson_id', $quiz->after_lesson)
+                    ->where('user_id', auth()->id())
+                    ->first();
+        if(!$lessonSeen){
+            return redirect()->route('course.show', $quiz->course_id);
+        }
         $questions = $quiz->questions;
         return view('quiz', compact('quiz', 'questions'));
     }
@@ -168,4 +183,5 @@ class SiteController extends Controller
         // Return the score
         return view('score', compact('score', 'quiz'));
     }
+
 }

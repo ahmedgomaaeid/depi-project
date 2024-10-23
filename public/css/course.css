@@ -107,3 +107,31 @@ body {
     border-radius: 10px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   }
+
+  .feedback-message {
+    font-size: 1.5rem;
+    margin: 20px 0;
+  }
+
+  .feedback-message i {
+    margin-right: 10px;
+  }
+
+  .score-actions {
+    margin-top: 30px;
+  }
+
+  .score-actions button {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    margin: 0 10px;
+  }
+
+  .score-actions button:hover {
+    background-color: #0056b3;
+  }
