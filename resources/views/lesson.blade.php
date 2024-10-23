@@ -29,22 +29,26 @@
                 </video>
                 <p style="text-align:center;">{{ $lesson->description }}</p>
                 @if ($quiz && $quiz->count() > 0 && $quiz->scores->count() == 0)
-                    <a href="{{ route('quiz.show', $quiz->id) }}" class="btn btn-primary">Take Quiz</a>
+                    <div class="d-flex justify-content-center">
+                        <a href="{{ route('quiz.show', $quiz->id) }}" class="btn btn-primary">Take Quiz</a>
+                    </div>
                 @elseif($next_lesson && $lesson->id == end($seens))
-                    <a href="{{ route('lesson.show', $next_lesson) }}" class="btn btn-primary">Open Next Lesson</a>
+                    <div class="d-flex justify-content-center">
+                        <a href="{{ route('lesson.show', $next_lesson) }}" class="btn btn-primary">Open Next Lesson</a>
+                    </div>
                 @elseif ($lesson->id == $last_lesson)
-                    <div class="feedback-message text-success">
+                    <div class="feedback-message text-success text-center">
                             <i class="fas fa-check-circle"></i> Great job! You passed the course.
                         </div>
                         <!-- Action Buttons -->
-                    <div class="score-actions">
+                    <div class="score-actions d-flex justify-content-center">
                         <a onclick="downloadCertificate()" class="btn btn-secondary" download>Download Certificate</a>
                     </div>
                 @endif
             </div>
 
             <!-- Sidebar for Lessons (Right-Aligned) - Default Open -->
-            <div class="col-md-3 lesson-sidebar" style="margin-top:30px">
+            <div class="col-md-3 lesson-sidebar" style="margin-top:30px; padding-top: 42px;">
                 <h4>Lessons</h4>
                 @foreach ($lessons as $lesson_list)
                     @if (in_array($lesson_list->id, $seens))
@@ -86,7 +90,7 @@
             var user_name = "{{ Auth::user()->name }}";
             var course_name = "{{ $courseName}}";
             var lastSeenDate = "{{ $lastSeenDate }}";
-            var websiteName = "Elearning Platform";
+            var websiteName = "BrightPath";
 
             var canvas = document.createElement('canvas');
             var context = canvas.getContext('2d');
