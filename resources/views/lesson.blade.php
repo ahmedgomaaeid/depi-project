@@ -28,7 +28,7 @@
                     </p>
                 </video>
                 <p style="text-align:center;">{{ $lesson->description }}</p>
-                @if ($quiz && $quiz->count() > 0 && $quiz->scores->count() == 0)
+                @if ($quiz && $quiz->count() > 0 && $quiz->scores->where('user_id', auth()->id())->count() == 0)
                     <div class="d-flex justify-content-center">
                         <a href="{{ route('quiz.show', $quiz->id) }}" class="btn btn-primary">Take Quiz</a>
                     </div>
